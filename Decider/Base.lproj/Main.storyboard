@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="UVE-X9-DJ4">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="sxL-uh-crp">
+            <objects>
+                <navigationController id="UVE-X9-DJ4" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="TYB-ch-IbY">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="IoZ-jX-EOC" kind="relationship" relationship="rootViewController" id="V8S-QK-GpJ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0Us-y8-3WD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="643" y="287"/>
+        </scene>
+        <!--Decider-->
+        <scene sceneID="dcX-E9-sDu">
+            <objects>
+                <viewController id="IoZ-jX-EOC" customClass="ViewController" customModule="Decider" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Lg5-v2-3Jy"/>
+                        <viewControllerLayoutGuide type="bottom" id="nnb-7C-m6W"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="EAn-Xn-jO8">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YYH-vS-iKg" customClass="spinner" customModule="Decider" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="119" width="600" height="424"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="KeF-jP-KJE" appends="YES" id="4sx-v0-Tjc"/>
+                                    <outletCollection property="gestureRecognizers" destination="c2X-Fz-SOE" appends="YES" id="meh-Kl-EWE"/>
+                                </connections>
+                            </view>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="2" minValue="2" maxValue="8" translatesAutoresizingMaskIntoConstraints="NO" id="Xrh-Ep-RhP">
+                                <rect key="frame" x="241" y="72" width="118" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="114" id="aGM-8F-Qjh"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="fingerLifted:" destination="IoZ-jX-EOC" eventType="editingDidEnd" id="KCh-Mi-9YP"/>
+                                    <action selector="sliderChanges:" destination="IoZ-jX-EOC" eventType="valueChanged" id="5BG-Kk-JaD"/>
+                                </connections>
+                            </slider>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fW3-3y-gT0">
+                                <rect key="frame" x="164" y="562" width="272" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="272" id="vDU-K0-5ia"/>
+                                </constraints>
+                                <state key="normal" title="Spin!"/>
+                                <connections>
+                                    <action selector="boop:" destination="IoZ-jX-EOC" eventType="touchUpInside" id="VpS-25-cdT"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="fW3-3y-gT0" firstAttribute="top" secondItem="YYH-vS-iKg" secondAttribute="bottom" constant="19" id="N1K-ll-OXF"/>
+                            <constraint firstItem="YYH-vS-iKg" firstAttribute="leading" secondItem="EAn-Xn-jO8" secondAttribute="leading" id="T3V-3q-gWv"/>
+                            <constraint firstAttribute="trailing" secondItem="YYH-vS-iKg" secondAttribute="trailing" id="Trd-ai-65h"/>
+                            <constraint firstItem="nnb-7C-m6W" firstAttribute="top" secondItem="fW3-3y-gT0" secondAttribute="bottom" constant="8" symbolic="YES" id="Zyx-hB-01Y"/>
+                            <constraint firstItem="Xrh-Ep-RhP" firstAttribute="top" secondItem="Lg5-v2-3Jy" secondAttribute="bottom" constant="8" symbolic="YES" id="dXC-7f-5oZ"/>
+                            <constraint firstItem="YYH-vS-iKg" firstAttribute="centerX" secondItem="fW3-3y-gT0" secondAttribute="centerX" id="eBI-B9-SlV"/>
+                            <constraint firstItem="YYH-vS-iKg" firstAttribute="centerX" secondItem="Xrh-Ep-RhP" secondAttribute="centerX" id="fjq-Df-cXu"/>
+                            <constraint firstItem="YYH-vS-iKg" firstAttribute="top" secondItem="Xrh-Ep-RhP" secondAttribute="bottom" constant="17" id="hjy-Cj-pNI"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Decider" id="bf0-Pm-yxJ">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="P1Y-LD-aci">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="a6K-Fk-s5q">
+                                <rect key="frame" x="550" y="7" width="30" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Edit"/>
+                                <connections>
+                                    <segue destination="Oid-Ee-iLT" kind="show" identifier="rowCount" id="RnC-Rx-A8C"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="mySlider" destination="Xrh-Ep-RhP" id="lO4-wV-JFA"/>
+                        <outlet property="spinView" destination="YYH-vS-iKg" id="ENg-dN-vk0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ch9-QZ-wno" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="down" id="KeF-jP-KJE"/>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="c2X-Fz-SOE">
+                    <connections>
+                        <action selector="panSpeed:" destination="IoZ-jX-EOC" id="yWI-bK-1lq"/>
+                    </connections>
+                </panGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="1369" y="287"/>
+        </scene>
+        <!--Choices-->
+        <scene sceneID="I7w-Ia-Kt0">
+            <objects>
+                <tableViewController id="Oid-Ee-iLT" customClass="TableController" customModule="Decider" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="90" sectionHeaderHeight="28" sectionFooterHeight="28" id="R8r-b2-qzD">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="LabelCell" textLabel="iUK-L2-3As" style="IBUITableViewCellStyleDefault" id="eya-MH-kPe">
+                                <rect key="frame" x="0.0" y="92" width="600" height="90"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eya-MH-kPe" id="Crc-XP-cTc">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="89"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iUK-L2-3As">
+                                            <rect key="frame" x="15" y="0.0" width="570" height="89"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Oid-Ee-iLT" id="R9b-9l-f8Z"/>
+                            <outlet property="delegate" destination="Oid-Ee-iLT" id="fAC-qP-BXk"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Choices" id="bKU-ti-RJA"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zUf-cO-tXG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="2f2-pc-rds">
+                    <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="Edit"/>
+                </button>
+            </objects>
+            <point key="canvasLocation" x="2215" y="-305"/>
+        </scene>
+    </scenes>
+</document>
