@@ -24,7 +24,9 @@ class spinner: UIView {
     }
     
     var resetFlag = 0.0 {
-        didSet { self.setNeedsDisplay() }
+        didSet {
+            self.setNeedsDisplay()
+        }
     }
     
     var wedges : Int = 0
@@ -79,8 +81,8 @@ class spinner: UIView {
         var i = 1
         //beyondEight will only be necessary if I want the user to be able to do more than 8 options
         var beyondEight = i
-        
-        while i  <= wedges {
+        var tempWedges = wedges
+        while i  <= tempWedges {
             /*
              * Create each individual wedge and add it to the spinnerHolder
              */
@@ -124,10 +126,11 @@ class spinner: UIView {
             startAngle = endAngle
             endAngle = endAngle+arcLength
             spinnerHolder.addSublayer(wedgeLayer[Int(beyondEight-1)])
+            print("\(i)")
             i++
             beyondEight++
             if i == 9 {
-                wedges -= 8
+                tempWedges -= 8
                 i -= 8
             }
         }

@@ -56,7 +56,11 @@ class ViewController: UIViewController {
     @IBAction func boop(sender: UIBarButtonItem) {
         if stateSuspended {
             spinView.goBack()
-            startSpinning()
+            timer = NSTimer.scheduledTimerWithTimeInterval(1,
+                target: self,
+                selector: "startSpinning",
+                userInfo: nil,
+                repeats: false)
         } else if !currentlySpinning {
             startSpinning()
         }
@@ -112,7 +116,7 @@ class ViewController: UIViewController {
         stateSuspended = false
         setAngle()
         
-        var tenth = Double(round((Float(arc4random()) /  Float(UInt32.max))*10)/10) + Double(arc4random_uniform(3)+5)
+        var tenth = Double(round((Float(arc4random()) /  Float(UInt32.max))*10)/10) + Double(arc4random_uniform(5)+3)
         //Round down to the first decimal place
         tenth = round(tenth*10)/10
         
