@@ -9,24 +9,25 @@
 import UIKit
 
 class spinner: UIView {
-    var layerHolder = CALayer()
-    var circleLayer: [CAShapeLayer]!
+    //Layers
+    var spinnerHolder = CALayer()
+    var wedgeLayer: [CAShapeLayer]!
     var stopperLayer: CAShapeLayer!
-
-    var angle = 0
+    //////
+    
     var rads : CGFloat = 0.0
     
     var spinIt = 0.0 {
         didSet {
-            layerHolder.transform = CATransform3DRotate(layerHolder.transform, rads, 0.0, 0.0, 1.0)
+            spinnerHolder.transform = CATransform3DRotate(spinnerHolder.transform, rads, 0.0, 0.0, 1.0)
         }
     }
     
-    var wedges = 2.0 {
-        didSet {
-            self.setNeedsDisplay()
-        }
+    var resetFlag = 0.0 {
+        didSet { self.setNeedsDisplay() }
     }
+    
+    var wedges : Int = 0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,80 +41,140 @@ class spinner: UIView {
     
     override func drawRect(rect: CGRect) {
         spinIt = 0.0
+        
+        //Remove all sublayers
         layer.sublayers?.removeAll()
-        layerHolder.sublayers?.removeAll()
+        spinnerHolder.sublayers?.removeAll()
+        wedgeLayer?.removeAll()
+        wedgeLayer = [CAShapeLayer]()
+        /////////
         let context = UIGraphicsGetCurrentContext()
         let bounds = self.bounds
         
         self.backgroundColor?.setFill()
         CGContextFillRect(context, bounds)
         
-        var i = 1.0
-        var startAngle = (1/wedges)*(2*M_PI)
-        var endAngle   = startAngle+startAngle
-        let arcLength = endAngle - startAngle
+        var startAngle = 0.0
+        var endAngle = (1.0/Double(wedges))*(2*M_PI)
+        let arcLength = endAngle
         let center = CGPointMake(0.0, 0.0)
         
-        circleLayer?.removeAll()
-        circleLayer = [CAShapeLayer]()
+        let maxX = bounds.size.width
+        let maxY = bounds.size.height
+        
+        /* Sets spinner radius relative to device orientation */
+        let oriX : CGFloat
+        
+        /* Landscape mode */
+        if maxX > maxY {
+            oriX = maxY
+        }
+        /* Portrait */
+        else {
+            oriX = maxX
+        }
+        
+        let cPathRadius = CGFloat((oriX/2) - 50.0)
+        let wedgeCenter = CGPoint(x: maxX/2.0, y: maxY/2.0 - cPathRadius+25)
+        var i = 1
+        //beyondEight will only be necessary if I want the user to be able to do more than 8 options
+        var beyondEight = i
         
         while i  <= wedges {
-            let circlePath = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: CGFloat((frame.size.width/2) - 50.0), startAngle: CGFloat(startAngle), endAngle: CGFloat(endAngle), clockwise: true)
-            let tempCircleLayer = CAShapeLayer()
-            circlePath.addLineToPoint(center)
-            tempCircleLayer.path = circlePath.CGPath
+            /*
+             * Create each individual wedge and add it to the spinnerHolder
+             */
+            let wedgePath = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: cPathRadius, startAngle: CGFloat(startAngle), endAngle: CGFloat(endAngle), clockwise: true)
+            let tempWedgePath = CAShapeLayer()
+            wedgePath.addLineToPoint(center)
+            tempWedgePath.path = wedgePath.CGPath
+            //Fill color using Colors class
             switch(i) {
             case 1:
-                tempCircleLayer.fillColor = Colors.W_ONE
+                tempWedgePath.fillColor = Colors.W_ONE
+                break
             case 2:
-                tempCircleLayer.fillColor = Colors.W_TWO
+                tempWedgePath.fillColor = Colors.W_TWO
+                break
             case 3:
-                tempCircleLayer.fillColor = Colors.W_THREE
+                tempWedgePath.fillColor = Colors.W_THREE
+                break
             case 4:
-                tempCircleLayer.fillColor = Colors.W_FOUR
+                tempWedgePath.fillColor = Colors.W_FOUR
+                break
             case 5:
-                tempCircleLayer.fillColor = Colors.W_FIVE
+                tempWedgePath.fillColor = Colors.W_FIVE
+                break
             case 6:
-                tempCircleLayer.fillColor = Colors.W_SIX
+                tempWedgePath.fillColor = Colors.W_SIX
+                break
             case 7:
-                tempCircleLayer.fillColor = Colors.W_SEV
+                tempWedgePath.fillColor = Colors.W_SEV
+                break
             case 8:
-                tempCircleLayer.fillColor = Colors.W_EIGHT
+                tempWedgePath.fillColor = Colors.W_EIGHT
+                break
             default:
-                print("")
+                tempWedgePath.fillColor = UIColor.blackColor().CGColor
+                break
             }
         
-            circleLayer.append(tempCircleLayer)
+            wedgeLayer.append(tempWedgePath)
         
             startAngle = endAngle
             endAngle = endAngle+arcLength
-            layerHolder.addSublayer(circleLayer[Int(i-1)])
+            spinnerHolder.addSublayer(wedgeLayer[Int(beyondEight-1)])
             i++
+            beyondEight++
+            if i == 9 {
+                wedges -= 8
+                i -= 8
+            }
         }
         
-        layerHolder.borderWidth = 5.0
-        layerHolder.borderColor = UIColor.greenColor().CGColor
-        
-        layerHolder.transform = CATransform3DMakeTranslation(bounds.size.width/2.0, bounds.size.height/2.0, 0.0)
+        /* Create ticker wedge */
+        let tickerPath = UIBezierPath(arcCenter: wedgeCenter, radius: CGFloat(50.0), startAngle: 4.2, endAngle: 5.22, clockwise: true)
+        tickerPath.addLineToPoint(wedgeCenter)
+        let tickerLayer = CAShapeLayer()
+        tickerLayer.path = tickerPath.CGPath
+        tickerLayer.fillColor = UIColor.blackColor().CGColor
     
-        layer.addSublayer(layerHolder)
+        /* Create ticker pointer */
+        let pointer = UIBezierPath(arcCenter: CGPoint(x: maxX/2.0, y: maxY/2.0 - cPathRadius+25), radius: 3, startAngle: 0, endAngle: 6.28, clockwise: true)
+        let pointerLayer = CAShapeLayer()
+        pointerLayer.path = pointer.CGPath
+        pointerLayer.fillColor = UIColor.whiteColor().CGColor
         
+        /* Spinner center */
+        let spinnerHole = UIBezierPath(arcCenter: CGPoint(x: maxX/2.0, y: maxY/2.0), radius: CGFloat((oriX/2)/12), startAngle: 0, endAngle: 6.28, clockwise: true)
+        let holeLayer = CAShapeLayer()
+        holeLayer.path = spinnerHole.CGPath
+        holeLayer.fillColor = UIColor.blackColor().CGColor
+        
+        //Translate spinnerHolder to middle of screen
+        spinnerHolder.transform = CATransform3DMakeTranslation(maxX/2.0, maxY/2.0, 0.0)
+        
+        //Add all previous layers to view's layer
+        layer.addSublayer(spinnerHolder)
+        layer.addSublayer(holeLayer)
+        layer.addSublayer(pointerLayer)
+        layer.addSublayer(tickerLayer)
+    }
+    
+    func getBig(count : Int) {
+        if let tempLayer = layer.sublayers!.first!.sublayers {
+            for lyr in tempLayer {
+                if tempLayer.indexOf(lyr) == count {
+                    lyr.transform = CATransform3DScale(lyr.transform, 1.03, 1.03, 1.0)
+                } else {
+                    lyr.transform = CATransform3DScale(lyr.transform, 0.85, 0.85, 1.0)
+                }
+            }
+        }
+    }
+    
+    func goBack() {
+        resetFlag += 0.1
     }
     
 }
-
-
-
-//let stopperCetner = CGPointMake(CGFloat(bounds.width/2.0), CGFloat(bounds.size.height/2.0))
-
-//        let stopper = UIBezierPath(arcCenter: CGPoint(x: frame.size.width / 2.0, y: frame.size.height / 3.0), radius: CGFloat((frame.size.width/5)), startAngle: CGFloat(((2.8/2)*M_PI)), endAngle: CGFloat(((3.2/2)*M_PI)), clockwise: true)
-//        stopperLayer = CAShapeLayer()
-//        stopperLayer.path = stopper.CGPath
-//        stopper.addLineToPoint(stopperCetner)
-//        stopperLayer.fillColor = UIColor.blackColor().CGColor
-//        stopperLayer.strokeColor = UIColor.blackColor().CGColor
-//        stopperLayer.lineWidth = 2.0
-//
-//        layer.addSublayer(stopperLayer)
-
-//layerHolder.bounds = CGRectMake(0.0, 0.0, bounds.size.width, bounds.size.height)

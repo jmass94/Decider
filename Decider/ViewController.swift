@@ -16,64 +16,109 @@ class ViewController: UIViewController {
     
     var num = 1.48352986419518
     
-    var spinningFlag : Bool = false
+    var spinnerPosition : Double = 0.0
+    
+    var currentlySpinning : Bool = false
+    var stateSuspended : Bool = false
+    
+    var entries = [String]()
+    
+    @IBOutlet weak var decisionLabel: UILabel!
     
     @IBOutlet weak var spinView: spinner!
 
     /* Gestures */
+    /* TO DO */
+    @IBOutlet var rotateGesture: UIRotationGestureRecognizer!
     @IBAction func panSpeed(sender: UIPanGestureRecognizer) {
-        let speed = sender.velocityInView(spinView)
-        let radsToSpin : Double
+        //let speed = sender.velocityInView(spinView)
         
-        //spinView.spinIt = spinView.spinIt + 0.000001
-        print(speed)
+        spinView.spinIt = spinView.spinIt + 0.000001
+        //print(speed)
     }
+//    @IBAction func rotation(sender: UIRotationGestureRecognizer) {
+//        print("Rotation is \(sender.velocity)")
+//        //spinView.rads = sender.velocity/CGFloat(2*M_PI)
+//        spinView.spinnerHolder.transform = CATransform3DRotate(spinView.spinnerHolder.transform, sender.velocity/36, 0.0, 0.0, 1.0)
+//        //spinView.spinIt = spinView.spinIt + 0.000001
+//        spinnerPosition -= Double(sender.velocity)
+//        if spinnerPosition < 0 {
+//            spinnerPosition += (2*M_PI)
+//        } else if spinnerPosition > (2*M_PI) {
+//            spinnerPosition -= (2*M_PI)
+//        }
+//    }
     
     /* -------- */
     
-    @IBOutlet weak var mySlider: UISlider!
-    
     var wedgeCount : Int = 2
     
-    @IBAction func sliderChanges(sender: UISlider) {
-        sender.setValue(Float(lroundf(mySlider.value)), animated: true)
-        wedgeCount = Int(sender.value)
-        spinView.wedges = Double(sender.value)
-    }
-    
-    @IBOutlet weak var label: UILabel!
-    
-    
-    @IBAction func boop(sender: UIButton) {
-        if(spinningFlag) {
-            timer.invalidate()
-            sender.setTitle("Spin!", forState: UIControlState.Normal)
-            spinningFlag = false
-            spinView.spinIt = 0
-        }
-        else {
+    @IBAction func boop(sender: UIBarButtonItem) {
+        if stateSuspended {
+            spinView.goBack()
             startSpinning()
-            //sender.setTitle("Stop!", forState: UIControlState.Normal)
+        } else if !currentlySpinning {
+            startSpinning()
         }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        spinView.wedges = Double(wedgeCount)
+        self.view.addGestureRecognizer(rotateGesture)
+        setWheel()
+    }
+    
+    func setWheel() {
+        print(wedgeCount)
+        spinView.wedges = wedgeCount
     }
     
     func stopWheel() {
+        currentlySpinning = false
+        stateSuspended = true
         timer.invalidate()
-        spinningFlag = false
-        spinView.spinIt = 0
-        num = 1.48352986419518
+        if spinnerPosition < 0 {
+            spinnerPosition += (2*M_PI)
+        }
+        spinnerPosition += 0.0000001 //In case of the spinner landing in the middle
+        
+        let spacer = (2*M_PI) / Double(wedgeCount)
+        var wedgeRanges = [0.0]
+        for(var i = 1; i <= wedgeCount; i++) {
+            wedgeRanges.append(wedgeRanges[i-1]+spacer)
+        }
+        
+        print(entries)
+        print(wedgeRanges)
+        
+        var count = 0
+        print(spinnerPosition)
+        while count < wedgeRanges.count {
+            if (spinnerPosition >= wedgeRanges[count] && spinnerPosition <= wedgeRanges[count+1]) {
+                decisionLabel.text = "The spinner chose \(entries[count])!"
+                spinView.getBig(count)
+                break
+            } else {
+                count++
+            }
+        }
+        
     }
     
     func startSpinning() {
+        spinnerPosition = (3*M_PI)/2.0
+        decisionLabel.text = "Spinning..."
+        currentlySpinning = true
+        stateSuspended = false
         setAngle()
         
-        timeAmt = NSTimeInterval.init(Double(arc4random_uniform(3)+3))
+        var tenth = Double(round((Float(arc4random()) /  Float(UInt32.max))*10)/10) + Double(arc4random_uniform(3)+5)
+        //Round down to the first decimal place
+        tenth = round(tenth*10)/10
         
+        //Initialize timer
+        timeAmt = NSTimeInterval.init(tenth)
+        print(timeAmt)
         answer = NSTimer.scheduledTimerWithTimeInterval(timeAmt,
             target: self,
             selector: Selector("stopWheel"),
@@ -85,19 +130,20 @@ class ViewController: UIViewController {
             selector: Selector("updateMeter"),
             userInfo: nil,
             repeats: true)
-        spinningFlag = true
     }
     
     func setAngle() {
-        spinView.angle = Int(arc4random_uniform(180) + 1)
+        //spinView.angle = Int(arc4random_uniform(180) + 1)
         //spinView.rads = CGFloat(Double(spinView.angle) / 180 * Double(M_PI))
         
     }
     
-    func updateMeter() {
-        spinView.rads = CGFloat(num - (num*0.04))
-        num = Double(spinView.rads)
-        spinView.spinIt = spinView.spinIt + 0.000001
+    func updateMeter() {      
+        spinView.spinnerHolder.transform = CATransform3DRotate(spinView.spinnerHolder.transform, CGFloat(num), 0.0, 0.0, 1.0)
+        spinnerPosition -= num
+        if spinnerPosition < 0 {
+            spinnerPosition += (2*M_PI)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -105,12 +151,6 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "rowCount" {
-            if let destinationVC = segue.destinationViewController as? TableController {
-                 destinationVC.numEntries = Int(mySlider.value)
-            }
-        }
-    }
+    
 }
 
