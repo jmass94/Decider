@@ -9,6 +9,11 @@
 import UIKit
 
 class spinner: UIView {
+    
+    var bnds : CGRect!
+    var maxX : CGFloat = 0.0
+    var maxY : CGFloat = 0.0
+    
     //Layers
     var spinnerHolder = CALayer()
     var wedgeLayer: [CAShapeLayer]!
@@ -20,12 +25,6 @@ class spinner: UIView {
     var spinIt = 0.0 {
         didSet {
             spinnerHolder.transform = CATransform3DRotate(spinnerHolder.transform, rads, 0.0, 0.0, 1.0)
-        }
-    }
-    
-    var resetFlag = 0.0 {
-        didSet {
-            self.setNeedsDisplay()
         }
     }
     
@@ -51,7 +50,9 @@ class spinner: UIView {
         wedgeLayer = [CAShapeLayer]()
         /////////
         let context = UIGraphicsGetCurrentContext()
-        let bounds = self.bounds
+        bnds = self.bounds
+        maxX = bnds.size.width
+        maxY = bnds.size.height
         
         self.backgroundColor?.setFill()
         CGContextFillRect(context, bounds)
@@ -60,9 +61,6 @@ class spinner: UIView {
         var endAngle = (1.0/Double(wedges))*(2*M_PI)
         let arcLength = endAngle
         let center = CGPointMake(0.0, 0.0)
-        
-        let maxX = bounds.size.width
-        let maxY = bounds.size.height
         
         /* Sets spinner radius relative to device orientation */
         let oriX : CGFloat
@@ -126,7 +124,6 @@ class spinner: UIView {
             startAngle = endAngle
             endAngle = endAngle+arcLength
             spinnerHolder.addSublayer(wedgeLayer[Int(beyondEight-1)])
-            print("\(i)")
             i++
             beyondEight++
             if i == 9 {
@@ -176,8 +173,8 @@ class spinner: UIView {
         }
     }
     
-    func goBack() {
-        resetFlag += 0.1
+    func reset() {
+        self.setNeedsDisplay()
     }
     
 }
