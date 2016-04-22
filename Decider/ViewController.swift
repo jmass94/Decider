@@ -12,6 +12,14 @@
 
 import UIKit
 
+private extension CGPoint {
+    // Get the length (a.k.a. magnitude) of the vector
+    var length: CGFloat { return sqrt(self.x * self.x + self.y * self.y) }
+    
+    // Normalize the vector (preserve its direction, but change its magnitude to 1)
+    var normalized: CGPoint { return CGPoint(x: self.x / self.length, y: self.y / self.length) }
+}
+
 class ViewController: UIViewController {
     ////////////
     override func shouldAutorotate() -> Bool {
@@ -32,47 +40,101 @@ class ViewController: UIViewController {
     
     //Rads/sec to spin spinner
     var num = 1.5
-    
     var spinnerPosition = (3*M_PI)/2.0
+    
+    var deltaAngle : Float!
+    var startTransform : CGAffineTransform!
+    
     
     var entries = [String]()
     
+    @IBOutlet weak var redSquare: UIView!
+    @IBOutlet weak var blueSquare: UIView!
     @IBOutlet weak var decisionLabel: UILabel!
     @IBOutlet weak var spinView: Spinner!
     @IBOutlet weak var spinButton: UIBarButtonItem!
+    
+    private var originalBounds = CGRect.zero
+    private var originalCenter = CGPoint.zero
+    
+    private var animator: UIDynamicAnimator!
+    private var attachmentBehavior: UIAttachmentBehavior!
+    private var pushBehavior: UIPushBehavior!
+    private var itemBehavior: UIDynamicItemBehavior!
+    
 
     /* Gestures */
     /* TO DO */
-    @IBOutlet var rotateGesture: UIRotationGestureRecognizer!
-    @IBAction func panSpeed(sender: UIPanGestureRecognizer) {
-        //let speed = sender.velocityInView(spinView)
+    var v1 = CGPointZero
+    var totalAngle = 0.0
+    @IBOutlet weak var panGesture: UIPanGestureRecognizer!
+    @IBAction func manualRotate(sender: UIPanGestureRecognizer) {
+        print(sender.velocityInView(self.view))
+        let pt = sender.locationInView(self.view)
+        let dx = pt.x - self.view.center.x
+        let dy = pt.y - self.view.center.y
+        let ang = atan2(Float(dy), Float(dx))
+        let angleDifference = deltaAngle - ang;
+        //print(angleDifference)
+        totalAngle = Double(angleDifference)
+        //print(totalAngle)
+        spinView.transform = CGAffineTransformRotate(startTransform, CGFloat(-angleDifference))
         
-        //print(speed)
     }
-//    @IBAction func rotation(sender: UIRotationGestureRecognizer) {
-//        print("Rotation is \(sender.velocity)")
-//        //spinView.rads = sender.velocity/CGFloat(2*M_PI)
-//        spinView.spinnerHolder.transform = CATransform3DRotate(spinView.spinnerHolder.transform, sender.velocity/36, 0.0, 0.0, 1.0)
-//        //spinView.spinIt = spinView.spinIt + 0.000001
-//        spinnerPosition -= Double(sender.velocity)
-//        if spinnerPosition < 0 {
-//            spinnerPosition += (2*M_PI)
-//        } else if spinnerPosition > (2*M_PI) {
-//            spinnerPosition -= (2*M_PI)
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.view.addGestureRecognizer(panGesture)
+        setWheel()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        animator = UIDynamicAnimator(referenceView: view)
+        originalBounds = spinView.bounds
+        originalCenter = spinView.center
+    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if let touchPoint = touches.first?.locationInView(self.view) {
+            let dx = touchPoint.x - self.view.center.x
+            let dy = touchPoint.y - self.view.center.y
+            
+            print(spinnerPosition)
+            deltaAngle = atan2(Float(dy), Float(dx));
+            startTransform = self.view.transform
+        }
+        super.touchesBegan(touches, withEvent: event)
+    }
+//    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+//        if let pt = touches.first?.locationInView(self.view) {
+//            let dx = pt.x - self.view.center.x
+//            let dy = pt.y - self.view.center.y
+//            let ang = atan2(Float(dy), Float(dx))
+//            let angleDifference = deltaAngle - ang;
+//            print(angleDifference)
+//            totalAngle = Double(angleDifference)
+//            print(totalAngle)
+//            spinView.transform = CGAffineTransformRotate(startTransform, CGFloat(-angleDifference))
 //        }
+//        super.touchesMoved(touches, withEvent: event)
+//        
 //    }
     
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        spinnerPosition += totalAngle
+        if(spinnerPosition > (2*M_PI)) {
+            spinnerPosition -= (2*M_PI)
+        } else if spinnerPosition < 0 {
+            spinnerPosition += (2*M_PI)
+        }
+        print(spinnerPosition)
+        super.touchesEnded(touches, withEvent: event)
+    }
     /* -------- */
     
     var wedgeCount : Int = 2
     var wedgeRanges = [0.0]
-    var decision = 0
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        //self.view.addGestureRecognizer(rotateGesture)
-        setWheel()
-    }
     
     @IBAction func boop(sender: UIBarButtonItem) {
         startSpinning()
@@ -145,12 +207,12 @@ class ViewController: UIViewController {
          * Spinner should move to new direction clockwise
          */
         //let finishSpinBy = (2*M_PI)-extraSpin
-        UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
+        UIView.animateWithDuration(0.3, delay: 0, options: .CurveLinear, animations: { () -> Void in
                 self.spinView.transform = CGAffineTransformRotate(self.spinView.transform, CGFloat(1.5))
             }) { (Bool) -> Void in
     
         }
-        UIView.animateWithDuration(1.0, delay: 0.3, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
+        UIView.animateWithDuration(1.0, delay: 0.3, options: .CurveEaseOut, animations: { () -> Void in
             self.spinView.transform = CGAffineTransformRotate(self.spinView.transform, CGFloat(extraSpin))
             }) { (Bool) -> Void in
                 

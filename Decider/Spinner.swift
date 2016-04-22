@@ -125,6 +125,7 @@ class Spinner: UIView {
         //Add all previous layers to view's layer
         layer.addSublayer(spinnerHolder)
         layer.addSublayer(holeLayer)
+        print("Spinner built")
     }
     
     func getBig(count : Int) {
