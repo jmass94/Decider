@@ -8,7 +8,7 @@
 
 import UIKit
 
-class spinner: UIView {
+class Spinner: UIView {
     
     var bnds : CGRect!
     var maxX : CGFloat = 0.0
@@ -17,16 +17,7 @@ class spinner: UIView {
     //Layers
     var spinnerHolder = CALayer()
     var wedgeLayer: [CAShapeLayer]!
-    var stopperLayer: CAShapeLayer!
     //////
-    
-    var rads : CGFloat = 0.0
-    
-    var spinIt = 0.0 {
-        didSet {
-            spinnerHolder.transform = CATransform3DRotate(spinnerHolder.transform, rads, 0.0, 0.0, 1.0)
-        }
-    }
     
     var wedges : Int = 0
     
@@ -41,14 +32,7 @@ class spinner: UIView {
     }
     
     override func drawRect(rect: CGRect) {
-        spinIt = 0.0
-        
-        //Remove all sublayers
-        layer.sublayers?.removeAll()
-        spinnerHolder.sublayers?.removeAll()
-        wedgeLayer?.removeAll()
-        wedgeLayer = [CAShapeLayer]()
-        /////////
+
         let context = UIGraphicsGetCurrentContext()
         bnds = self.bounds
         maxX = bnds.size.width
@@ -63,28 +47,23 @@ class spinner: UIView {
         let center = CGPointMake(0.0, 0.0)
         
         /* Sets spinner radius relative to device orientation */
-        let oriX : CGFloat
         
-        /* Landscape mode */
-        if maxX > maxY {
-            oriX = maxY
-        }
-        /* Portrait */
-        else {
-            oriX = maxX
-        }
-        
-        let cPathRadius = CGFloat((oriX/2) - 50.0)
-        let wedgeCenter = CGPoint(x: maxX/2.0, y: maxY/2.0 - cPathRadius+25)
+        let cPathRadius = CGFloat((maxX/2) - 50.0)
         var i = 1
-        //beyondEight will only be necessary if I want the user to be able to do more than 8 options
-        var beyondEight = i
+        var temp_i = i
         var tempWedges = wedges
+        
+        wedgeLayer = [CAShapeLayer]()
+        
         while i  <= tempWedges {
             /*
              * Create each individual wedge and add it to the spinnerHolder
              */
-            let wedgePath = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0), radius: cPathRadius, startAngle: CGFloat(startAngle), endAngle: CGFloat(endAngle), clockwise: true)
+            let wedgePath = UIBezierPath(arcCenter: CGPoint(x: 0, y: 0),
+                radius: cPathRadius,
+                startAngle: CGFloat(startAngle),
+                endAngle: CGFloat(endAngle),
+                clockwise: true)
             let tempWedgePath = CAShapeLayer()
             wedgePath.addLineToPoint(center)
             tempWedgePath.path = wedgePath.CGPath
@@ -118,35 +97,24 @@ class spinner: UIView {
                 tempWedgePath.fillColor = UIColor.blackColor().CGColor
                 break
             }
+            
+            tempWedgePath.strokeColor = UIColor.blackColor().CGColor
         
             wedgeLayer.append(tempWedgePath)
         
             startAngle = endAngle
             endAngle = endAngle+arcLength
-            spinnerHolder.addSublayer(wedgeLayer[Int(beyondEight-1)])
+            spinnerHolder.addSublayer(wedgeLayer[Int(temp_i-1)])
             i++
-            beyondEight++
+            temp_i++
             if i == 9 {
                 tempWedges -= 8
                 i -= 8
             }
         }
         
-        /* Create ticker wedge */
-        let tickerPath = UIBezierPath(arcCenter: wedgeCenter, radius: CGFloat(50.0), startAngle: 4.2, endAngle: 5.22, clockwise: true)
-        tickerPath.addLineToPoint(wedgeCenter)
-        let tickerLayer = CAShapeLayer()
-        tickerLayer.path = tickerPath.CGPath
-        tickerLayer.fillColor = UIColor.blackColor().CGColor
-    
-        /* Create ticker pointer */
-        let pointer = UIBezierPath(arcCenter: CGPoint(x: maxX/2.0, y: maxY/2.0 - cPathRadius+25), radius: 3, startAngle: 0, endAngle: 6.28, clockwise: true)
-        let pointerLayer = CAShapeLayer()
-        pointerLayer.path = pointer.CGPath
-        pointerLayer.fillColor = UIColor.whiteColor().CGColor
-        
         /* Spinner center */
-        let spinnerHole = UIBezierPath(arcCenter: CGPoint(x: maxX/2.0, y: maxY/2.0), radius: CGFloat((oriX/2)/12), startAngle: 0, endAngle: 6.28, clockwise: true)
+        let spinnerHole = UIBezierPath(arcCenter: CGPoint(x: maxX/2.0, y: maxY/2.0), radius: CGFloat((maxX/2)/12), startAngle: 0, endAngle: 6.28, clockwise: true)
         let holeLayer = CAShapeLayer()
         holeLayer.path = spinnerHole.CGPath
         holeLayer.fillColor = UIColor.blackColor().CGColor
@@ -157,8 +125,6 @@ class spinner: UIView {
         //Add all previous layers to view's layer
         layer.addSublayer(spinnerHolder)
         layer.addSublayer(holeLayer)
-        layer.addSublayer(pointerLayer)
-        layer.addSublayer(tickerLayer)
     }
     
     func getBig(count : Int) {
@@ -171,10 +137,6 @@ class spinner: UIView {
                 }
             }
         }
-    }
-    
-    func reset() {
-        self.setNeedsDisplay()
     }
     
 }

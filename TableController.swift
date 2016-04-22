@@ -102,7 +102,6 @@ class TableController: UITableViewController {
 
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print(segue.identifier)
         if segue.identifier == "rowCount" {
             if let destinationVC = segue.destinationViewController as? ViewController {
                 destinationVC.wedgeCount = entries.count

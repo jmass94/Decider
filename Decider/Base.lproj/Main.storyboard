@@ -20,16 +20,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YYH-vS-iKg" customClass="spinner" customModule="Decider" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="119" width="600" height="380"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AZV-Cb-LFY" customClass="Ticker" customModule="Decider" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="90" width="600" height="420"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YYH-vS-iKg" customClass="Spinner" customModule="Decider" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="20" width="600" height="380"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <gestureRecognizers/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="c2X-Fz-SOE" appends="YES" id="meh-Kl-EWE"/>
+                                            <outletCollection property="gestureRecognizers" destination="KeF-jP-KJE" appends="YES" id="4sx-v0-Tjc"/>
+                                        </connections>
+                                    </view>
+                                </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <gestureRecognizers/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="KeF-jP-KJE" appends="YES" id="4sx-v0-Tjc"/>
-                                    <outletCollection property="gestureRecognizers" destination="c2X-Fz-SOE" appends="YES" id="meh-Kl-EWE"/>
-                                </connections>
+                                <constraints>
+                                    <constraint firstItem="YYH-vS-iKg" firstAttribute="centerY" secondItem="AZV-Cb-LFY" secondAttribute="centerY" id="6QU-H5-b4K"/>
+                                    <constraint firstItem="YYH-vS-iKg" firstAttribute="leading" secondItem="AZV-Cb-LFY" secondAttribute="leading" id="DMi-E1-nAu"/>
+                                    <constraint firstAttribute="trailing" secondItem="YYH-vS-iKg" secondAttribute="trailing" id="KTY-y6-KGl"/>
+                                    <constraint firstItem="YYH-vS-iKg" firstAttribute="top" secondItem="AZV-Cb-LFY" secondAttribute="top" constant="20" id="Leo-1V-kQT"/>
+                                </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S2n-T3-x7T">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S2n-T3-x7T">
                                 <rect key="frame" x="140" y="37" width="321" height="74"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="321" id="AoR-B0-zR9"/>
@@ -42,12 +54,11 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="S2n-T3-x7T" firstAttribute="top" secondItem="Lg5-v2-3Jy" secondAttribute="bottom" constant="17" id="0ls-Nz-1Yd"/>
-                            <constraint firstItem="YYH-vS-iKg" firstAttribute="leading" secondItem="EAn-Xn-jO8" secondAttribute="leading" id="C8P-at-nwT"/>
-                            <constraint firstItem="YYH-vS-iKg" firstAttribute="top" secondItem="S2n-T3-x7T" secondAttribute="bottom" constant="8" symbolic="YES" id="NVH-d6-LZU"/>
-                            <constraint firstAttribute="trailing" secondItem="YYH-vS-iKg" secondAttribute="trailing" id="R0A-62-Kga"/>
-                            <constraint firstItem="nnb-7C-m6W" firstAttribute="top" secondItem="YYH-vS-iKg" secondAttribute="bottom" constant="57" id="cip-EM-fsM"/>
-                            <constraint firstItem="S2n-T3-x7T" firstAttribute="centerX" secondItem="YYH-vS-iKg" secondAttribute="centerX" id="gX5-IB-xoU"/>
-                            <constraint firstItem="YYH-vS-iKg" firstAttribute="top" secondItem="Lg5-v2-3Jy" secondAttribute="bottom" constant="99" id="xaf-sM-5WT"/>
+                            <constraint firstItem="nnb-7C-m6W" firstAttribute="top" secondItem="AZV-Cb-LFY" secondAttribute="bottom" constant="46" id="Ejk-x1-b3g"/>
+                            <constraint firstAttribute="trailing" secondItem="AZV-Cb-LFY" secondAttribute="trailing" id="RVh-ob-yxh"/>
+                            <constraint firstItem="AZV-Cb-LFY" firstAttribute="leading" secondItem="EAn-Xn-jO8" secondAttribute="leading" id="ixB-C7-rmf"/>
+                            <constraint firstItem="AZV-Cb-LFY" firstAttribute="centerY" secondItem="EAn-Xn-jO8" secondAttribute="centerY" id="sjc-LX-NcM"/>
+                            <constraint firstItem="AZV-Cb-LFY" firstAttribute="centerX" secondItem="S2n-T3-x7T" secondAttribute="centerX" id="wGO-tt-Gvp"/>
                         </constraints>
                     </view>
                     <toolbarItems>
@@ -63,6 +74,7 @@
                     <connections>
                         <outlet property="decisionLabel" destination="S2n-T3-x7T" id="du9-lH-D7O"/>
                         <outlet property="rotateGesture" destination="xWn-HH-lAe" id="J36-zG-eXW"/>
+                        <outlet property="spinButton" destination="qjm-d7-olF" id="RJW-Lp-sXh"/>
                         <outlet property="spinView" destination="YYH-vS-iKg" id="ENg-dN-vk0"/>
                     </connections>
                 </viewController>

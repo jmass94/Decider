@@ -15,7 +15,6 @@ class NewEntryController: UIViewController {
     var entries = [String]()
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print(segue.identifier)
         if segue.identifier == "addRow" {
             if let destinationVC = segue.destinationViewController as? TableController {
                 if(textField.text! != "") {

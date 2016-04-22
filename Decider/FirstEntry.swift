@@ -13,7 +13,6 @@ class FirstEntry: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var textField: UITextField!
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print(segue.identifier)
         if segue.identifier == "addRow" {
             if let destinationVC = segue.destinationViewController as? TableController {
                 if(textField.text! != "") {

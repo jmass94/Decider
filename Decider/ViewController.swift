@@ -13,23 +13,33 @@
 import UIKit
 
 class ViewController: UIViewController {
+    ////////////
+    override func shouldAutorotate() -> Bool {
+        return false
+    }
+    
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.Portrait
+    }
+    ////////////
 
+    /*
+     * Timers
+     */
     var timer: NSTimer!
     var answer: NSTimer!
     var timeAmt: NSTimeInterval!
     
+    //Rads/sec to spin spinner
     var num = 1.5
     
-    var spinnerPosition : Double = 0.0
-    
-    var currentlySpinning : Bool = false
-    var stateSuspended : Bool = false
+    var spinnerPosition = (3*M_PI)/2.0
     
     var entries = [String]()
     
     @IBOutlet weak var decisionLabel: UILabel!
-    
-    @IBOutlet weak var spinView: spinner!
+    @IBOutlet weak var spinView: Spinner!
+    @IBOutlet weak var spinButton: UIBarButtonItem!
 
     /* Gestures */
     /* TO DO */
@@ -58,35 +68,15 @@ class ViewController: UIViewController {
     var wedgeRanges = [0.0]
     var decision = 0
     
-    @IBAction func boop(sender: UIBarButtonItem) {
-        if stateSuspended {
-            spinView.reset()
-            currentlySpinning = true
-            stateSuspended = false
-            timer = NSTimer.scheduledTimerWithTimeInterval(1,
-                target: self,
-                selector: "startSpinning",
-                userInfo: nil,
-                repeats: false)
-        } else if !currentlySpinning {
-            currentlySpinning = true
-            stateSuspended = false
-            startSpinning()
-        }
-    }
-    
-    override func shouldAutorotate() -> Bool {
-        return false
-    }
-    
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        return UIInterfaceOrientationMask.Portrait
-    }
-    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         //self.view.addGestureRecognizer(rotateGesture)
         setWheel()
+    }
+    
+    @IBAction func boop(sender: UIBarButtonItem) {
+        startSpinning()
+        spinButton.enabled = false
     }
     
     func setWheel() {
@@ -97,65 +87,17 @@ class ViewController: UIViewController {
         }
     }
     
-    func stopWheel() {
-        currentlySpinning = false
-        stateSuspended = true
-        timer.invalidate()
-        /*
-         * spinnerPosition should keep up with actual spinner
-         * Decrements spinnerPosition once more to replicate actual spinner position
-         */
-//        spinnerPosition -= num
-//        if spinnerPosition < 0 {
-//            spinnerPosition += (2*M_PI)
-//        }
-        
-        let arc4randoMax:Double = 0x100000000
-        let upper = wedgeRanges[decision+1]
-        let lower = wedgeRanges[decision]
-        let interval = Double((Double(arc4random()) / arc4randoMax) * (upper - lower) + lower)
-        var difference = interval-spinnerPosition
-        if difference < 0 {
-            difference += (2*M_PI)
-        }
-        
-        var question = difference-interval
-        if question < 0 {
-            question += (2*M_PI)
-        }
-        
-        /*
-         * Spinner should move to new direction clockwise
-         */
-        spinView.spinnerHolder.transform = CATransform3DRotate(spinView.spinnerHolder.transform, CGFloat((2*M_PI)-difference), 0.0, 0.0, 1.0)
-        //spinView.spinnerHolder.transform = CATransform3DMakeTranslation(spinView.maxX/2, spinView.maxY/2, 1.0)
-
-        spinnerPosition += difference
-        if spinnerPosition > (2*M_PI) {
-            spinnerPosition -= ((2*M_PI))
-        }
-        var count = 0
-        while count < wedgeRanges.count {
-            if (spinnerPosition >= wedgeRanges[count] && spinnerPosition <= wedgeRanges[count+1]) {
-                decisionLabel.text = "The spinner chose \(entries[count])!"
-                spinView.getBig(count)
-                break
-            } else {
-                count++
-            }
-        }
-        
-    }
-    
     func startSpinning() {
-        let eCount = entries.count
-        let toThis = UInt32(eCount)
-        decision = Int(arc4random() % toThis)
-        print("Decision: \(entries[decision])")
-        
-        spinnerPosition = (3*M_PI)/2.0
+        decisionLabel.alpha = 0.0
         decisionLabel.text = "Spinning..."
-        setAngle()
+        UIView.animateWithDuration(0.5,
+            delay: 0,
+            options: .CurveEaseIn,
+            animations: { () -> Void in
+                self.decisionLabel.alpha = 1.0
+            }) { (Bool) -> Void in
+                
+        }
         
         var tenth = Double(round((Float(arc4random()) /  Float(UInt32.max))*10)/10) + Double(arc4random_uniform(5)+3)
         //Round down to the first decimal place
@@ -165,33 +107,84 @@ class ViewController: UIViewController {
         timeAmt = NSTimeInterval.init(tenth)
         answer = NSTimer.scheduledTimerWithTimeInterval(timeAmt,
             target: self,
-            selector: Selector("stopWheel"),
+            selector: Selector("wrapUp"),
             userInfo: nil,
             repeats: false)
         
         timer = NSTimer.scheduledTimerWithTimeInterval(0.1,
             target: self,
-            selector: Selector("updateMeter"),
+            selector: Selector("rotate"),
             userInfo: nil,
             repeats: true)
     }
     
-    func setAngle() {
-        //spinView.angle = Int(arc4random_uniform(180) + 1)
-        //spinView.rads = CGFloat(Double(spinView.angle) / 180 * Double(M_PI))
-        
-    }
-    
     func rotate() {
-        spinView.spinnerHolder.transform = CATransform3DRotate(spinView.spinnerHolder.transform, CGFloat(num), 0.0, 0.0, 1.0)
-    }
-    
-    func updateMeter() {      
-        rotate()
+        UIView.animateWithDuration(0.1,
+            delay: 0,
+            options: .CurveLinear,
+            animations: { () -> Void in
+                self.spinView.transform = CGAffineTransformRotate(self.spinView.transform, CGFloat(self.num))
+            }) { (Bool) -> Void in
+        }
+        
         spinnerPosition -= num
         if spinnerPosition < 0 {
             spinnerPosition += (2*M_PI)
         }
+    }
+    
+    func wrapUp() {
+        timer.invalidate()
+        
+        let arc4randoMax:Double = 0x100000000
+        let upper = 0.0
+        let lower = M_PI
+        let extraSpin = Double((Double(arc4random()) / arc4randoMax) * (upper - lower) + lower)
+        
+        /*
+         * Spinner should move to new direction clockwise
+         */
+        //let finishSpinBy = (2*M_PI)-extraSpin
+        UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
+                self.spinView.transform = CGAffineTransformRotate(self.spinView.transform, CGFloat(1.5))
+            }) { (Bool) -> Void in
+    
+        }
+        UIView.animateWithDuration(1.0, delay: 0.3, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
+            self.spinView.transform = CGAffineTransformRotate(self.spinView.transform, CGFloat(extraSpin))
+            }) { (Bool) -> Void in
+                
+        }
+        
+        spinnerPosition -= (1.5+extraSpin)
+        if spinnerPosition < (0) {
+            spinnerPosition += ((2*M_PI))
+        }
+        var count = 0
+        while count < wedgeRanges.count {
+            if (spinnerPosition >= wedgeRanges[count] && spinnerPosition <= wedgeRanges[count+1]) {
+                UIView.animateWithDuration(0.5,
+                    delay: 0,
+                    options: .CurveEaseIn,
+                    animations: { () -> Void in
+                        self.decisionLabel.alpha = 0
+                    }, completion: { (Bool) -> Void in
+                })
+                decisionLabel.text = "The spinner chose \(entries[count])!"
+                UIView.animateWithDuration(0.5,
+                    delay: 0.5,
+                    options: .CurveEaseIn,
+                    animations: { () -> Void in
+                        self.decisionLabel.alpha = 1.0
+                    }, completion: { (Bool) -> Void in
+                        self.spinView.getBig(count)
+                })
+                break
+            } else {
+                count++
+            }
+        }
+        
     }
     
     override func didReceiveMemoryWarning() {
