@@ -10,13 +10,12 @@ import UIKit
 
 class Spinner: UIView {
     
-    var bnds : CGRect!
-    var maxX : CGFloat = 0.0
-    var maxY : CGFloat = 0.0
+    private var maxX : CGFloat = 0.0
+    private var maxY : CGFloat = 0.0
     
     //Layers
-    var spinnerHolder = CALayer()
-    var wedgeLayer: [CAShapeLayer]!
+    private var spinnerHolder = CALayer()
+    private var wedgeLayer: [CAShapeLayer]!
     //////
     
     var wedges : Int = 0
@@ -34,9 +33,8 @@ class Spinner: UIView {
     override func drawRect(rect: CGRect) {
 
         let context = UIGraphicsGetCurrentContext()
-        bnds = self.bounds
-        maxX = bnds.size.width
-        maxY = bnds.size.height
+        maxX = self.bounds.maxX
+        maxY = self.bounds.maxY
         
         self.backgroundColor?.setFill()
         CGContextFillRect(context, bounds)
@@ -45,8 +43,6 @@ class Spinner: UIView {
         var endAngle = (1.0/Double(wedges))*(2*M_PI)
         let arcLength = endAngle
         let center = CGPointMake(0.0, 0.0)
-        
-        /* Sets spinner radius relative to device orientation */
         
         let cPathRadius = CGFloat((maxX/2) - 50.0)
         var i = 1
@@ -125,7 +121,6 @@ class Spinner: UIView {
         //Add all previous layers to view's layer
         layer.addSublayer(spinnerHolder)
         layer.addSublayer(holeLayer)
-        print("Spinner built")
     }
     
     func getBig(count : Int) {
